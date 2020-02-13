@@ -62,7 +62,7 @@ ruleset wovyn_base {
     rule change_threshold {
         select when wovyn:new_threshold threshold re#(.+)#
         always {
-            ent:temperature_threshold := event:attr("threshold")
+            ent:temperature_threshold := as(event:attr("threshold"))
         }
     }
 }
