@@ -7,8 +7,11 @@ ruleset wovyn_base {
                 auth_token =  keys:twilio{"auth_token"}
     }
 
-    global {
-        temperature_threshold = 75.0
+    rule initialize {
+        select when wrangler ruleset_added where event:attr("rids") >< meta:rid
+        always {
+            ent:temperature_threshold := 80.0
+        }
     }
 
     rule process_heartbeat {
@@ -28,7 +31,7 @@ ruleset wovyn_base {
         select when wovyn:new_temperature_reading
         pre {
             temperature = event:attr("temperature")
-            is_violation = (temperature > temperature_threshold) 
+            is_violation = (temperature > ent:temperature_threshold) 
                 => true | false
         }
         send_directive("temp_reading", {"is_violation": is_violation})
@@ -59,7 +62,7 @@ ruleset wovyn_base {
     rule change_threshold {
         select when wovyn:new_threshold threshold re#(.+)#
         always {
-            temperature_threshold = event:attr("threshold")
+            ent:temperature_threshold := event:attr("threshold")
         }
     }
 }
