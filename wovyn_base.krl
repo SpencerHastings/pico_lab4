@@ -54,4 +54,12 @@ ruleset wovyn_base {
         //               "+12029911769",
         //               message)
     }
+
+    //I hate changing the ruleset just to change the threshold so this seemed nice to have
+    rule change_threshold {
+        select when wovyn:new_threshold threshold re#(.+)#
+        always {
+            temperature_threshold = event:attr("threshold")
+        }
+    }
 }
